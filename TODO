@@ -1,0 +1,112 @@
+Syntax:
+	range-based for loop
+	constexpr
+		complex //14
+		chrono //14
+		array //14
+	noexcept
+	magic statics
+	move semantics
+		rvalue //http://zh.cppreference.com/w/cpp/language/reference
+		forward
+		move
+		move_if_noexcept
+		reference collapsing
+		*this //http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2007/n2439.htm
+	attributes //http://zh.cppreference.com/w/cpp/language/attributes
+		deprecated //14
+	using //https://en.wikipedia.org/wiki/C%2B%2B11#Template_aliases
+	static_assert
+	inline namespace
+	lambda //http://zh.cppreference.com/w/cpp/language/lambda
+		generic lambdas //14
+		capture expressions //14
+	clarifying memory allocation //14//http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3664.html
+	sized deallocation //14//http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3778.html#expr.delete
+
+Type:
+	auto
+		trailing return type //https://en.wikipedia.org/wiki/C%2B%2B11#Uniform_method_for_computing_the_return_type_of_function_objects
+		return type deduction //14//https://en.wikipedia.org/wiki/C%2B%2B14#Function_return_type_deduction
+	binary literals //14
+	digit separator //14
+	nullptr
+	long long
+	union
+	enum //http://zh.cppreference.com/w/cpp/language/enum#.E6.9C.89.E4.BD.9C.E7.94.A8.E5.9F.9F.E6.9E.9A.E4.B8.BE
+		forword-declared enum
+	decltype
+		decltype( auto) //14
+	user-defined literals //https://en.wikipedia.org/wiki/C%2B%2B11#User-defined_literals
+	raw and unicode string literals //https://en.wikipedia.org/wiki/C%2B%2B11#New_string_literals
+	POD //https://en.wikipedia.org/wiki/C%2B%2B11#Modification_to_the_definition_of_plain_old_data
+
+OOP:
+	non-static data member initializer
+	override
+	final
+	explicit
+		explicit ctor //http://zh.cppreference.com/w/cpp/language/explicit
+		explicit conversion //http://en.cppreference.com/w/cpp/language/cast_operator
+	default and delete //https://en.wikipedia.org/wiki/C%2B%2B11#Explicitly_defaulted_and_deleted_special_member_functions
+	ctor //http://en.cppreference.com/w/cpp/language/initializer_list
+		member initializer list
+		inheriting ctor
+		delegating ctor
+		default ctor //http://zh.cppreference.com/w/cpp/language/default_constructor
+
+
+
+GP:
+	parameter pack //http://en.cppreference.com/w/cpp/language/parameter_pack
+	type traits
+	variable templates //14
+
+IO:
+	iomanip
+	stdio
+
+Concurrence:
+	atomic
+	condition_variable
+	future
+	mutex
+	thread
+	thread_local //http://en.cppreference.com/w/cpp/language/storage_duration
+
+STL:
+	iterator
+	array
+	forward_list
+	unordered_set
+	unordered_map
+
+Utils:
+	utility
+		declval
+	memory
+	functional
+	exception
+	initializer_list
+	tuple
+
+Lib:
+	chrono
+	string
+	codecvt
+	random
+	ratio
+	regex
+	system_error
+	typeindex
+	type_traits
+
+C_Lib:
+	math
+	stdint
+	inttypes
+	stdlib
+	uchar
+
+
+
