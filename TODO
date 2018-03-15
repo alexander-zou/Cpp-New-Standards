@@ -1,9 +1,11 @@
 Syntax:
-	range-based for loop
+	+range-based for loop
 	constexpr
 		complex //14
 		chrono //14
 		array //14
+		initializer_list //14
+		tuple //14
 	noexcept
 	magic statics
 	move semantics
@@ -65,14 +67,18 @@ GP:
 IO:
 	iomanip
 	stdio
+	filesystem //17
+
 
 Concurrence:
 	atomic
 	condition_variable
 	future
 	mutex
+	shared_mutex //14
 	thread
 	thread_local //http://en.cppreference.com/w/cpp/language/storage_duration
+	execution //17
 
 STL:
 	iterator
@@ -89,11 +95,17 @@ Utils:
 	exception
 	initializer_list
 	tuple
+	any //17
+	optional //17
+	variant //17
 
 Lib:
 	chrono
+		literal //14
 	string
-	codecvt
+		literal //14
+	string_view //17
+	charconv //17
 	random
 	ratio
 	regex
