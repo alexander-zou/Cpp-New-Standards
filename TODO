@@ -15,6 +15,7 @@ Syntax:
 		move_if_noexcept
 		reference collapsing
 		*this //http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2007/n2439.htm
+		emplace_back
 	attributes //http://zh.cppreference.com/w/cpp/language/attributes
 		deprecated //14
 	using //https://en.wikipedia.org/wiki/C%2B%2B11#Template_aliases
