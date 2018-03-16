@@ -12,56 +12,99 @@ Scope::_s_count = 0;
 bool
 Scope::_s_newline = true;
 
-vector<ScopeSetting>
-Scope::_s_stack;
+int
+Scope::_s_indent = 0;
+
+Scope const *
+Scope::_s_current_scope = nullptr;
+
+Scope const * const &
+Scope::s_current_scope = _s_current_scope;
 
 // static methods:
 
 void
-Scope::_print_indent()
+Scope::_SPrintIndent()
 {
     if ( _s_newline) {
         _s_newline = false;
-        for ( auto const &setting : _s_stack)
-            if ( setting.indent)
-                cout << "| ";
+        for ( int i = 0; i < n; i ++)
+            cout << "| ";
     }
 }
 
 void
-Scope::_print_newline()
+Scope::_SPrintNewline()
 {
-    _print_indent();
+    _SPrintIndent();
     cout << endl;
     _s_newline = true;
 }
 
+bool
+Scope::SNeedPrintAlloc()
+{
+    if ( s_current_scope)
+        return s_current_scope->_show_alloc;
+    return false;
+}
+
+bool
+Scope::SNeedIndent()
+{
+    if ( s_current_scope)
+        return s_current_scope->_indent;
+    return true;
+}
+
+Dummy::InfoType
+Scope::SDummyInfoSetting()
+{
+    if ( s_current_scope)
+        return s_current_scope->_dummy_setting;
+    return Dummy::NONE;
+}
+
 // methods:
 
-Scope::Scope( char const *name, bool indent)
-    : _start_time( high_resolution_clock::now()),
-      _id( count ++),
-      _name( name),
-      id( _id),
-      name( _name)
+void
+Scope::_InheritSettings()
 {
-    if ( indent) {
+    if ( _enclosure_scope) {
+        _show_time = _enclosure_scope->_show_time;
+        _show_alloc = _enclosure_scope->_show_alloc;
+        _dummy_setting = _enclosure_scope->_dummy_setting;
+    }
+}
+
+Scope::Scope( char const *name)
+    : Scope( _need_indent(), name)
+{
+}
+
+Scope::Scope( bool indent, char const *name)
+    : _name( name),
+{
+    _inherit_settings();
+    _indent = indent;
+    if ( _indent) {
         _print_newline();
         (*this) << "_#" << id << ' ' << name << endl;
+        _s_total_indent ++;
     }
-    ScopeSetting setting;
-    setting.indent = indent;
 }
 
 Scope::~Scope()
 {
-    // TODO: print mem report:
-    bool indent = _s_stack.end().indent;
-    _s_stack.pop_back();
-    if ( indent) {
+    for ( auto &cb : _exit_callbacks)
+        cb();
+    // TODO: print mem report
+    if ( _indent) {
         _print_newline();
-        (*this) << "\\#" << id << ' ' << name << endl; 
+        _s_total_indent --;
+        (*this) << "\\#" << id << ' ' << name << endl;
     }
+    _s_current_scope = _closure_scope;
 }
 
 Scope &
@@ -72,10 +115,39 @@ Scope::SetTimer( bool show)
 }
 
 Scope &
-Scope::operator<<( Manipulator m)
+Scope::ShowMemoryAllocation( bool show)
+{
+    _show_alloc = show;
+    return *this;
+}
+
+Scope &
+Scope::ShowMemoryReport( bool show)
+{
+    _show_report = show;
+    return *this;
+}
+
+float
+Scope::TimePastInSec() const
+{
+    auto now = high_resolution_clock::now();
+    duration<float> past = duration_cast<duration<float>>( now - _start_time);
+    return past.count();
+}
+
+Scope &
+Scope::SetDummyInfo( Dummy::InfoType setting)
+{
+    _dummy_setting = setting;
+    return *this;
+}
+
+Scope const &
+Scope::operator<<( Manipulator m) const
 {
     if ( m == (Manipulator)endl)
-        _print_newline();
+        _SPrintNewline();
     else
         cout << m;
     return *this;

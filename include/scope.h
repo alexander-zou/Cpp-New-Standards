@@ -3,44 +3,43 @@
 
 #include <ostream>
 #include <functional> // std::function
-#include <vector>
+#include <chrono>
 
 #include "include/dummy.h"
 
 class Scope {
-    friend class Dummy;
     private:
         static int _s_count;
         static bool _s_newline;
+        static int _s_total_indent;
+        static Scope const *_s_current_scope;
 
-        struct ScopeSetting {
-            bool indent = true;
-            bool printMem = false;
-            Dummy::InfoType dummyInfo = Dummy::NONE;
-        };
-
-        static vector<ScopeSetting> _s_stack;
-
-        static void _print_indent();
-        static void _print_newline();
-
-        static bool _need_print_mem();
-        static Dummy::InfoType _dummy_info_setting();
+        static void _SPrintIndent();
+        static void _SPrintNewline();
 
         typedef std::ostream &(*Manipulator)( std::ostream &);
 
-        std::high_resolution_clock::time_point _start_time;
-        int _id;
+        auto _start_time = high_resolution_clock::now();
+        int _id = _s_count ++;
         char const *_name;
-        std::vector<std::function> _exit_callback;
+        bool _indent = false;
         bool _show_time = false;
+        bool _show_alloc = false;
+        bool _show_report = false;
+        Dummy::InfoType _dummy_setting = Dummy::NONE;
+        Scope const *_enclosure_scope = _s_current_scope;
+        std::vector<std::function> _exit_callbacks;
+        bool _enclosure_scope = _s_current_scope;
+
+        void _InheritSettings();
 
     public:
 
-        int const &id;
-        char const * const &name;
+        int const &id = _id;
+        char const * const &name = _name;
 
-        Scope( char const *name = "", bool indent = true);
+        Scope( char const *name = "");
+        Scope( bool indent, char const *name = "");
         ~Scope();
 
         Scope &SetTimer( bool show = true);
@@ -48,20 +47,23 @@ class Scope {
         Scope &ShowMemoryReport( bool show = true);
         Scope &AddExitCallback( std::function cb);
         Scope &ClearExitCallbacks();
-        Scope &SetDummyInfo();
+        Scope &SetDummyInfo( Dummy::InfoType setting);
         float TimePastInSec() const;
 
-        static Scope &CurrentScope();
+        static Scope const *s_current_scope;
+        static bool SNeedPrintAlloc();
+        static bool SNeedIndent();
+        static Dummy::InfoType SDummyInfoSetting();
 
         template<typename T>
-        Scope &operator<<( T val)
+        Scope const &operator<<( T val) const
         {
-            _print_indent();
+            _SPrintIndent();
             std::cout << val;
             return *this;
         }
 
-        Scope &operator<<( Manipulator m);
+        Scope const &operator<<( Manipulator m) const;
 
 
 };

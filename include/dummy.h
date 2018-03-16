@@ -7,8 +7,9 @@ class Dummy {
     friend class Scope;
     
     public:
-        enum class InfoType : unsigned long {
-            NONE = 0,
+        enum class InfoType : unsigned {
+            SHOW_NONE = 0,
+            SHOW_ALL = -1;
             SHOW_ID                 = 1 << 0,
             DEFAULT_CTOR            = 1 << 1,
             COPY_CTOR               = 1 << 2,
@@ -21,7 +22,7 @@ class Dummy {
             MOVE_ASSIGN_OP          = 1 << 9,
             NOEXCEPT_MOVE_ASSIGN_OP = 1 << 10,
             INITER_ASSIGN_OP        = 1 << 11,
-            CONVERSION_CTOR         = 1 << 12,
+            CONVERSION_ASSIGN_OP    = 1 << 12,
         };
 
         int const &m_id( _m_id);
@@ -49,9 +50,13 @@ class Dummy {
         virtual Dummy &operator=( std::initializer_list<double> list);
 
     private:
-        static int _s_cout;
+        static int _s_count;
 
-        int _m_id;
+        int _m_id = _s_count ++;
+        InfoType _m_setting = SHOW_NONE;
+
+        bool _NeedPrint( InfoType type);
+        bool _PrintName( Scope const &scope);
 };
 
 #endif
