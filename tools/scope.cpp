@@ -1,8 +1,9 @@
 
-#include "include/scope.h"
-#include "include/memory_helper.h"
+#include "../include/scope.h"
+//#include "../include/memory_helper.h"
 
 using namespace std;
+using namespace std::chrono;
 
 // init static members:
 
@@ -13,7 +14,7 @@ bool
 Scope::_s_newline = true;
 
 int
-Scope::_s_indent = 0;
+Scope::_s_total_indent = 0;
 
 Scope const *
 Scope::_s_current_scope = nullptr;
@@ -28,7 +29,7 @@ Scope::_SPrintIndent()
 {
     if ( _s_newline) {
         _s_newline = false;
-        for ( int i = 0; i < n; i ++)
+        for ( int i = 0; i < _s_total_indent; i ++)
             cout << "| ";
     }
 }
@@ -62,7 +63,7 @@ Scope::SDummyInfoSetting()
 {
     if ( s_current_scope)
         return s_current_scope->_dummy_setting;
-    return Dummy::NONE;
+    return Dummy::SHOW_NONE;
 }
 
 // methods:
@@ -78,20 +79,22 @@ Scope::_InheritSettings()
 }
 
 Scope::Scope( char const *name)
-    : Scope( _need_indent(), name)
+    : Scope( SNeedIndent(), name)
 {
+    _s_current_scope = this;
 }
 
 Scope::Scope( bool indent, char const *name)
-    : _name( name),
+    : _name( name)
 {
-    _inherit_settings();
+    _InheritSettings();
     _indent = indent;
     if ( _indent) {
-        _print_newline();
+        _SPrintNewline();
         (*this) << "_#" << id << ' ' << name << endl;
         _s_total_indent ++;
     }
+    _s_current_scope = this;
 }
 
 Scope::~Scope()
@@ -100,11 +103,11 @@ Scope::~Scope()
         cb();
     // TODO: print mem report
     if ( _indent) {
-        _print_newline();
+        _SPrintNewline();
         _s_total_indent --;
         (*this) << "\\#" << id << ' ' << name << endl;
     }
-    _s_current_scope = _closure_scope;
+    _s_current_scope = _enclosure_scope;
 }
 
 Scope &
@@ -150,6 +153,20 @@ Scope::operator<<( Manipulator m) const
         _SPrintNewline();
     else
         cout << m;
+    return *this;
+}
+
+Scope &
+Scope::AddExitCallback( function<void()> cb)
+{
+    _exit_callbacks.push_back( cb);
+    return *this;
+}
+
+Scope &
+Scope::ClearExitCallbacks()
+{
+    _exit_callbacks.clear();
     return *this;
 }
 

@@ -1,11 +1,12 @@
 #ifndef _SCOPE_H
 #define _SCOPE_H
 
-#include <ostream>
+#include <iostream>
 #include <functional> // std::function
+#include <vector>
 #include <chrono>
 
-#include "include/dummy.h"
+#include "../include/dummy.h"
 
 class Scope {
     private:
@@ -19,17 +20,18 @@ class Scope {
 
         typedef std::ostream &(*Manipulator)( std::ostream &);
 
-        auto _start_time = high_resolution_clock::now();
+        std::chrono::time_point<std::chrono::high_resolution_clock> _start_time =
+                                                std::chrono::high_resolution_clock::now();
         int _id = _s_count ++;
         char const *_name;
         bool _indent = false;
         bool _show_time = false;
         bool _show_alloc = false;
         bool _show_report = false;
-        Dummy::InfoType _dummy_setting = Dummy::NONE;
+        Dummy::InfoType _dummy_setting = Dummy::SHOW_NONE;
         Scope const *_enclosure_scope = _s_current_scope;
-        std::vector<std::function> _exit_callbacks;
-        bool _enclosure_scope = _s_current_scope;
+        std::vector<std::function<void()> > _exit_callbacks;
+//        bool _has_enclosure_scope = _s_current_scope;
 
         void _InheritSettings();
 
@@ -45,12 +47,12 @@ class Scope {
         Scope &SetTimer( bool show = true);
         Scope &ShowMemoryAllocation( bool show = true);
         Scope &ShowMemoryReport( bool show = true);
-        Scope &AddExitCallback( std::function cb);
+        Scope &AddExitCallback( std::function<void()> cb);
         Scope &ClearExitCallbacks();
         Scope &SetDummyInfo( Dummy::InfoType setting);
         float TimePastInSec() const;
 
-        static Scope const *s_current_scope;
+        static Scope const * const &s_current_scope;
         static bool SNeedPrintAlloc();
         static bool SNeedIndent();
         static Dummy::InfoType SDummyInfoSetting();

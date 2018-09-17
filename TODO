@@ -1,5 +1,5 @@
 Syntax:
-	+range-based for loop
+	[DONE]range-based for loop
 	constexpr
 		complex //14
 		chrono //14
@@ -7,7 +7,7 @@ Syntax:
 		initializer_list //14
 		tuple //14
 	noexcept
-	magic statics
+	[DONE]magic statics
 	move semantics
 		rvalue //http://zh.cppreference.com/w/cpp/language/reference
 		forward
@@ -26,6 +26,7 @@ Syntax:
 		capture expressions //14
 	clarifying memory allocation //14//http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3664.html
 	sized deallocation //14//http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3778.html#expr.delete
+	structured binding declaration //17//https://en.cppreference.com/w/cpp/language/structured_binding
 
 Type:
 	auto
@@ -96,6 +97,7 @@ Utils:
 	exception
 	initializer_list
 	tuple
+	__cplusplus
 	any //17
 	optional //17
 	variant //17

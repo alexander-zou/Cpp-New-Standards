@@ -1,5 +1,5 @@
-#include "include/dummy.h"
-#include "include/scope.h"
+#include "../include/dummy.h"
+#include "../include/scope.h"
 
 using namespace std;
 
@@ -25,12 +25,24 @@ Dummy::_PrintName( Scope const &scope)
     scope << ": ";
 }
 
+void
+Dummy::_PrintName()
+{
+    cout << "Dummy";
+    if ( _NeedPrint( SHOW_ID))
+        cout << '#' << m_id;
+    cout << ": ";
+}
+
 #define PRINT_INFO( type, msg) \
     if ( Scope::s_current_scope && _NeedPrint( type)) { \
         Scope const &scope = *(Scope::s_current_scope); \
         _PrintName( scope); \
         scope << msg << endl; \
-    } \
+    } else if ( _NeedPrint( type)) { \
+        _PrintName(); \
+        cout << msg << endl; \
+    }
 
 // ctors:
 
@@ -52,13 +64,14 @@ CTOR_BODY( COPY_CTOR, "calling copy constructor.", {
             m_double_member = other.m_double_member;
         })
 
+/*
 Dummy::Dummy( Dummy &&other)
 CTOR_BODY( MOVE_CTOR, "calling move constructor.", {
             m_char_member = other.m_char_member;
             m_int_member = other.m_int_member;
             m_float_member = other.m_float_member;
             m_double_member = other.m_double_member;
-        })
+        })*/
 
 Dummy::Dummy( Dummy &&other) noexcept
 CTOR_BODY( NOEXCEPT_MOVE_CTOR, "calling noexcept move constructor.", {
@@ -73,11 +86,11 @@ CTOR_BODY( CONVERSION_CTOR, "calling conversion constructor.", {
             m_char_member = value;
             m_int_member = value;
             m_float_member = value;
-            m_double_member = valse;
+            m_double_member = value;
         })
 
 Dummy::Dummy( initializer_list<double> list)
-CTOR_BODY( INITER_LIST_CTOR, "calling initializer constructor." {
+CTOR_BODY( INITER_LIST_CTOR, "calling initializer constructor.", {
             auto it = list.begin();
             if ( it != list.end()) {
                 m_char_member = *it;
@@ -116,8 +129,10 @@ Dummy::operator=( Dummy const &other)
     m_int_member = other.m_int_member;
     m_float_member = other.m_float_member;
     m_double_member = other.m_double_member;
+    return *this;
 }
 
+/*
 Dummy &
 Dummy::operator=( Dummy &&other)
 {
@@ -126,7 +141,9 @@ Dummy::operator=( Dummy &&other)
     m_int_member = other.m_int_member;
     m_float_member = other.m_float_member;
     m_double_member = other.m_double_member;
+    return *this;
 }
+*/
 
 Dummy &
 Dummy::operator=( Dummy &&other) noexcept
@@ -136,10 +153,11 @@ Dummy::operator=( Dummy &&other) noexcept
     m_int_member = other.m_int_member;
     m_float_member = other.m_float_member;
     m_double_member = other.m_double_member;
+    return *this;
 }
 
 Dummy &
-Dummy::operator=( initializer_list list)
+Dummy::operator=( initializer_list<double> const &list)
 {
     PRINT_INFO( INITER_ASSIGN_OP, "calling initializer assignment operator.");
     auto it = list.begin();
@@ -159,6 +177,7 @@ Dummy::operator=( initializer_list list)
         m_double_member = *it;
         ++ it;
     }
+    return *this;
 }
 
 Dummy &
@@ -168,7 +187,8 @@ Dummy::operator=( int value)
     m_char_member = value;
     m_int_member = value;
     m_float_member = value;
-    m_double_member = valse;
+    m_double_member = value;
+    return *this;
 }
 
 
