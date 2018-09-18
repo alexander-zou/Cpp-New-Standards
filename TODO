@@ -6,7 +6,7 @@ Syntax:
 		array //14
 		initializer_list //14
 		tuple //14
-	noexcept
+	[DONE]noexcept
 	[DONE]magic statics
 	move semantics
 		rvalue //http://zh.cppreference.com/w/cpp/language/reference

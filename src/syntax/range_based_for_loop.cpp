@@ -24,6 +24,7 @@ int main()
     tars_settings[ "honesty"] = 95;
     tars_settings[ "humor"] = 60;
 
+    // 利用结构化绑定声明(structured binding declaration)简化map遍历:
     for ( auto &&[ str, val] : tars_settings)
         cout << str << ':' << val << endl;
 #endif

@@ -5,7 +5,7 @@ project( Cpp-New-Standards)
 
 include_directories( include/*.h)
 
-set( CPP_STD "-std=c++11")
+set( CPP_STD "-std=c++17")
 set( CMAKE_CXX_FLAGS "${CPP_STD} -Wall")
 set( CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
 set( CMAKE_CXX_FLAGS_RELEASE "-O2")
