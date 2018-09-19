@@ -41,7 +41,7 @@ Type:
 		forword-declared enum
 	decltype
 		decltype( auto) //14
-	user-defined literals //https://en.wikipedia.org/wiki/C%2B%2B11#User-defined_literals
+	[done]user-defined literals //https://en.wikipedia.org/wiki/C%2B%2B11#User-defined_literals
 	raw and unicode string literals //https://en.wikipedia.org/wiki/C%2B%2B11#New_string_literals
 	POD //https://en.wikipedia.org/wiki/C%2B%2B11#Modification_to_the_definition_of_plain_old_data
 
