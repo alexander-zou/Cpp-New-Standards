@@ -18,5 +18,6 @@ file( GLOB tools_src "tools/*.cpp")
 
 add_subdirectory( src/syntax)
 add_subdirectory( src/type)
+add_subdirectory( src/oop)
 
 

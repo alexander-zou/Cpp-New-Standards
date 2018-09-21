@@ -58,12 +58,12 @@ Scope::SNeedIndent()
     return true;
 }
 
-Dummy::InfoType
+Scope::InfoType
 Scope::SDummyInfoSetting()
 {
     if ( s_current_scope)
         return s_current_scope->_dummy_setting;
-    return Dummy::SHOW_NONE;
+    return SHOW_NONE;
 }
 
 // methods:
@@ -140,9 +140,9 @@ Scope::TimePastInSec() const
 }
 
 Scope &
-Scope::SetDummyInfo( Dummy::InfoType setting)
+Scope::SetDummyInfo( unsigned setting)
 {
-    _dummy_setting = setting;
+    _dummy_setting = (InfoType)setting;
     return *this;
 }
 

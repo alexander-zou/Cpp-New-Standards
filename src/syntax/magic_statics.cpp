@@ -42,17 +42,17 @@ class Singleton final {
  * magic statics 对象会在第一次执行到声明语句时构造(lazy initialization)，会在
  * 进程退出时析构:
  */
-Dummy &foo()
+Dummy<> &foo()
 {
     Scope scope( "foo()");
-    static Dummy dummy;
+    static Dummy<> dummy;
     return dummy;
 }
 
 int main()
 {
     Scope scope( "main()");
-    scope.SetDummyInfo( Dummy::SHOW_ALL);
+    scope.SetDummyInfo( Scope::SHOW_ALL);
     auto &ret1 = foo();
     scope << "return addr: " << &ret1 << endl;
     auto &ret2 = foo();

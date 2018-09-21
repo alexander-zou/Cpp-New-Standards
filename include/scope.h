@@ -6,9 +6,27 @@
 #include <vector>
 #include <chrono>
 
-#include "../include/dummy.h"
-
 class Scope {
+
+    public:
+        enum InfoType : unsigned {
+            SHOW_NONE = 0,
+            SHOW_ALL = (unsigned)-1,
+            ID                 = 1 << 0,
+            DEF_CTOR           = 1 << 1,
+            COPY_CTOR          = 1 << 2,
+            MOVE_CTOR          = 1 << 3,
+            INITER_LIST_CTOR   = 1 << 4,
+            CONVERSION_CTOR    = 1 << 5,
+            CTORS = DEF_CTOR | COPY_CTOR | MOVE_CTOR | INITER_LIST_CTOR | CONVERSION_CTOR,
+            DTOR               = 1 << 6,
+            COPY_ASSIGN        = 1 << 7,
+            MOVE_ASSIGN        = 1 << 8,
+            INITER_LIST_ASSIGN = 1 << 9,
+            CONVERSION_ASSIGN  = 1 << 10,
+            ASSIGNS = COPY_ASSIGN | MOVE_ASSIGN | INITER_LIST_ASSIGN | CONVERSION_ASSIGN,
+        };
+
     private:
         static int _s_count;
         static bool _s_newline;
@@ -28,10 +46,9 @@ class Scope {
         bool _show_time = false;
         bool _show_alloc = false;
         bool _show_report = false;
-        Dummy::InfoType _dummy_setting = Dummy::SHOW_NONE;
+        InfoType _dummy_setting = SHOW_NONE;
         Scope const *_enclosure_scope = _s_current_scope;
         std::vector<std::function<void()> > _exit_callbacks;
-//        bool _has_enclosure_scope = _s_current_scope;
 
         void _InheritSettings();
 
@@ -49,13 +66,13 @@ class Scope {
         Scope &ShowMemoryReport( bool show = true);
         Scope &AddExitCallback( std::function<void()> cb);
         Scope &ClearExitCallbacks();
-        Scope &SetDummyInfo( Dummy::InfoType setting);
+        Scope &SetDummyInfo( unsigned setting);
         float TimePastInSec() const;
 
         static Scope const * const &s_current_scope;
         static bool SNeedPrintAlloc();
         static bool SNeedIndent();
-        static Dummy::InfoType SDummyInfoSetting();
+        static InfoType SDummyInfoSetting();
 
         template<typename T>
         Scope const &operator<<( T val) const
