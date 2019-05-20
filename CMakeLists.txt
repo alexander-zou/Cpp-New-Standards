@@ -6,7 +6,7 @@ project( Cpp-New-Standards)
 include_directories( include/*.h)
 
 set( CPP_STD "-std=c++17")
-set( CMAKE_CXX_FLAGS "${CPP_STD} -Wall -pedantic-errors")
+set( CMAKE_CXX_FLAGS "${CPP_STD} -Wall -Wno-unused-function -Wno-unused-variable -Wno-unused-parameter -pedantic-errors")
 set( CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
 set( CMAKE_CXX_FLAGS_RELEASE "-O2")
 set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

@@ -31,11 +31,11 @@ int main()
 {
     Scope scope( false);
     scope.SetDummyInfo( Scope::CTORS | Scope::ID);
-    scope << "now n = " << n << endl;
+    scope << "now n = " << n << Scope::endl;
     Foo foo1;
-    scope << "now n = " << n << endl;
+    scope << "now n = " << n << Scope::endl;
     Foo foo2( 123);
-    scope << "now n = " << n << endl;
+    scope << "now n = " << n << Scope::endl;
     return 0;
 }
 

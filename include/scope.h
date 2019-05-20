@@ -5,8 +5,18 @@
 #include <functional> // std::function
 #include <vector>
 #include <chrono>
+#include <new>
+
+void *operator new( size_t size);
+void *operator new( size_t size, std::nothrow_t const &) noexcept;
+void operator delete( void *ptr) noexcept;
 
 class Scope {
+    friend void *operator new( size_t);
+    friend void *operator new( size_t, std::nothrow_t const &) noexcept;
+    friend void operator delete( void *ptr) noexcept;
+
+    struct endl_t {};
 
     public:
         enum InfoType : unsigned {
@@ -26,15 +36,20 @@ class Scope {
             CONVERSION_ASSIGN  = 1 << 10,
             ASSIGNS = COPY_ASSIGN | MOVE_ASSIGN | INITER_LIST_ASSIGN | CONVERSION_ASSIGN,
         };
+        static endl_t endl;
 
     private:
         static int _s_count;
         static bool _s_newline;
         static int _s_total_indent;
-        static Scope const *_s_current_scope;
+        static Scope *_s_current_scope;
 
         static void _SPrintIndent();
         static void _SPrintNewline();
+
+        static void *_SAllocMem( size_t size);
+        static void *_SAllocMemNoexcept( size_t size) noexcept;
+        static void _SReleaseMem( void *ptr) noexcept;
 
         typedef std::ostream &(*Manipulator)( std::ostream &);
 
@@ -46,8 +61,10 @@ class Scope {
         bool _show_time = false;
         bool _show_alloc = false;
         bool _show_report = false;
+        size_t _mem_allocated = 0;
+        size_t _mem_freed = 0;
         InfoType _dummy_setting = SHOW_NONE;
-        Scope const *_enclosure_scope = _s_current_scope;
+        Scope *_enclosure_scope = _s_current_scope;
         std::vector<std::function<void()> > _exit_callbacks;
 
         void _InheritSettings();
@@ -69,7 +86,7 @@ class Scope {
         Scope &SetDummyInfo( unsigned setting);
         float TimePastInSec() const;
 
-        static Scope const * const &s_current_scope;
+        static Scope * const &s_current_scope;
         static bool SNeedPrintAlloc();
         static bool SNeedIndent();
         static InfoType SDummyInfoSetting();
@@ -82,7 +99,7 @@ class Scope {
             return *this;
         }
 
-        Scope const &operator<<( Manipulator m) const;
+        Scope const &operator<<( endl_t &endl) const;
 
 
 };

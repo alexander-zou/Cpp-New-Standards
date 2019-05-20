@@ -27,7 +27,7 @@ DummyBase::_PrintName( Scope const *scope) const noexcept
     if ( ! scope)
         scope = Scope::s_current_scope;
     if ( scope) {
-        *scope << endl << "Dummy";
+        *scope << Scope::endl << "Dummy";
         if ( _NeedPrint( Scope::ID))
             *scope << '#' << m_id;
         *scope << ": ";
@@ -46,7 +46,7 @@ DummyBase::_PrintMsg( string const &msg, Scope const *scope) const noexcept
         scope = Scope::s_current_scope;
     _PrintName( scope);
     if ( scope)
-        *scope << msg << endl;
+        *scope << msg << Scope::endl;
     else
         cout << msg << endl;
 }

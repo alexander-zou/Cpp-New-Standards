@@ -1,9 +1,21 @@
 
+#include <cstdlib>  // malloc(), free()
 #include "../include/scope.h"
-//#include "../include/memory_helper.h"
 
 using namespace std;
 using namespace std::chrono;
+
+// tool functions:
+
+static void *offset( void *ptr, ssize_t off)
+{
+    return reinterpret_cast<char *>( ptr) + off;
+}
+
+static void const *offset( void const *ptr, ssize_t off)
+{
+    return reinterpret_cast<char const *>( ptr) + off;
+}
 
 // init static members:
 
@@ -16,11 +28,14 @@ Scope::_s_newline = true;
 int
 Scope::_s_total_indent = 0;
 
-Scope const *
+Scope *
 Scope::_s_current_scope = nullptr;
 
-Scope const * const &
+Scope * const &
 Scope::s_current_scope = _s_current_scope;
+
+Scope::endl_t
+Scope::endl;
 
 // static methods:
 
@@ -38,8 +53,62 @@ void
 Scope::_SPrintNewline()
 {
     _SPrintIndent();
-    cout << endl;
+    cout << std::endl;
     _s_newline = true;
+}
+
+void *
+Scope::_SAllocMem( size_t size)
+{
+    void *result = malloc( size + sizeof( size_t));
+    if ( result) {
+        *reinterpret_cast<size_t *>( result) = size;
+        result = offset( result, sizeof( size_t));
+        if ( _s_current_scope) {
+            _s_current_scope->_mem_allocated += size;
+            if ( _s_current_scope->_show_alloc)
+                ( *_s_current_scope) << "[[MEM]] allocate "
+                    << result << " +" << size << endl;
+        }
+    } else {
+        new_handler handler = get_new_handler();
+        if ( handler != nullptr)
+            handler();
+    }
+    return result;
+}
+
+void *
+Scope::_SAllocMemNoexcept( size_t size) noexcept
+{
+    void *result = malloc( size + sizeof( size_t));
+    if ( result) {
+        *reinterpret_cast<size_t *>( result) = size;
+        result = offset( result, sizeof( size_t));
+        if ( _s_current_scope) {
+            _s_current_scope->_mem_allocated += size;
+            if ( _s_current_scope->_show_alloc)
+                ( *_s_current_scope) << "[[MEM]] ALLOCATE: "
+                    << result << " +" << size << endl;
+        }
+    }
+    return result;
+}
+
+void
+Scope::_SReleaseMem( void *ptr) noexcept
+{
+    if ( ptr) {
+        ptr = offset( ptr, -(int)sizeof( size_t));
+        size_t size = *reinterpret_cast<size_t *>( ptr);
+        if ( _s_current_scope) {
+            _s_current_scope->_mem_freed += size;
+            if ( _s_current_scope->_show_alloc)
+                ( *_s_current_scope) << "[[MEM]] RELEASE : "
+                    << ptr << " -" << size << endl;
+        }
+        free( ptr);
+    }
 }
 
 bool
@@ -65,6 +134,8 @@ Scope::SDummyInfoSetting()
         return s_current_scope->_dummy_setting;
     return SHOW_NONE;
 }
+
+
 
 // methods:
 
@@ -101,13 +172,20 @@ Scope::~Scope()
 {
     for ( auto &cb : _exit_callbacks)
         cb();
-    // TODO: print mem report
+    if ( _show_report) {
+        (*this) << "[[MEM]] TOTAL: +" << _mem_allocated
+                << " -" << _mem_freed << endl;
+    }
     if ( _indent) {
         _SPrintNewline();
         _s_total_indent --;
         (*this) << "\\#" << id << ' ' << name << endl;
     }
     _s_current_scope = _enclosure_scope;
+    if ( _s_current_scope) {
+        _s_current_scope->_mem_allocated += _mem_allocated;
+        _s_current_scope->_mem_freed += _mem_freed;
+    }
 }
 
 Scope &
@@ -147,12 +225,9 @@ Scope::SetDummyInfo( unsigned setting)
 }
 
 Scope const &
-Scope::operator<<( Manipulator m) const
+Scope::operator<<( endl_t &endl) const
 {
-    if ( m == (Manipulator)endl)
-        _SPrintNewline();
-    else
-        cout << m;
+    _SPrintNewline();
     return *this;
 }
 
@@ -168,6 +243,48 @@ Scope::ClearExitCallbacks()
 {
     _exit_callbacks.clear();
     return *this;
+}
+
+// override new and delete
+
+void *operator new( size_t size)
+{
+    return Scope::_SAllocMem( size);
+}
+
+void *operator new( size_t size, nothrow_t const &) noexcept
+{
+    return Scope::_SAllocMemNoexcept( size);
+}
+
+void operator delete( void *ptr) noexcept
+{
+    Scope::_SReleaseMem( ptr);
+}
+
+void *operator new[]( size_t size)
+{
+    return operator new( size);
+}
+
+void *operator new[]( size_t size, nothrow_t const &nothrow) noexcept
+{
+    return operator new( size, nothrow);
+}
+
+void operator delete( void *ptr, nothrow_t const &) noexcept
+{
+    operator delete( ptr);
+}
+
+void operator delete[]( void *ptr) noexcept
+{
+    operator delete( ptr);
+}
+
+void operator delete[]( void *ptr, nothrow_t const &) noexcept
+{
+    operator delete( ptr);
 }
 
 

@@ -26,7 +26,7 @@ class Singleton final {
         void bar() const
         {
             Scope scope( false);
-            scope << "Singleton::bar() called" << endl;
+            scope << "Singleton::bar() called" << Scope::endl;
         }
 
     private:
@@ -54,9 +54,9 @@ int main()
     Scope scope( "main()");
     scope.SetDummyInfo( Scope::SHOW_ALL);
     auto &ret1 = foo();
-    scope << "return addr: " << &ret1 << endl;
+    scope << "return addr: " << &ret1 << Scope::endl;
     auto &ret2 = foo();
-    scope << "return addr: " << &ret2 << endl;
+    scope << "return addr: " << &ret2 << Scope::endl;
     Singleton::GetInstance().bar();
     return 0;
 }
